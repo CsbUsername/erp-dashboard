@@ -1,0 +1,481 @@
+<script>
+import httpMixin from "@/mixins/httpMixin.js";
+import {URLS} from "@/constants/urls.js";
+
+export default {
+  mixins: [httpMixin],
+  emits: ['changeArt'],
+  props: {
+    sscc: {
+      type: String,
+      required: true
+    }
+  },
+  data: () => ({
+    sscc_info: {}
+  }),
+  methods: {
+    yyyymmddToDate(dateString) {
+      if (dateString) {
+        return `${dateString.substring(0, 4)}-${dateString.substring(4, 6)}-${dateString.substring(6, 8)}`;
+      }
+    },
+
+    async load_details() {
+      this.sscc_info = await this.sendRequest({
+        method: "GET",
+        url: URLS.SSCC.MAIN_INFORMATION + this.sscc
+      })
+
+      this.$emit('changeArt', this.sscc_info.S8581_ART_NR)
+    }
+  },
+  computed: {
+    account() {
+      return `${this.sscc_info.S8583_LAGERTYP_NR} - ${this.sscc_info.S8583_LAGERTYP_DATUM} - ${this.sscc_info.S8583_LAGERTYP_LOS}`
+    }
+  },
+  mounted() {
+    this.load_details()
+  },
+  updated() {
+    this.load_details()
+  }
+}
+</script>
+
+<template>
+  <v-card>
+    <v-card-text>
+      <nav>
+        <div class="nav nav-tabs" id="nav-tab" role="tablist">
+          <button class="nav-link active" id="nav-main-tab" data-bs-toggle="tab" data-bs-target="#nav-main"
+                  type="button" role="tab" aria-controls="nav-main" aria-selected="true">Общие положение
+          </button>
+          <button class="nav-link" id="nav-volume-tab" data-bs-toggle="tab" data-bs-target="#nav-volume" type="button"
+                  role="tab" aria-controls="nav-volume" aria-selected="false">Размеры и объемы
+          </button>
+          <button class="nav-link" id="nav-lager-tab" data-bs-toggle="tab" data-bs-target="#nav-lager" type="button"
+                  role="tab" aria-controls="nav-lager" aria-selected="false">Складская информация
+          </button>
+        </div>
+      </nav>
+      <div class="tab-content" id="nav-tabContent">
+        <div class="tab-pane fade show active" id="nav-main" role="tabpanel" aria-labelledby="nav-main-tab">
+          <v-card>
+            <v-card-text>
+              <fieldset>
+                <div class="row">
+                  <div class="col-12">
+                    <div class="row mb-1">
+                      <label class="col-sm-2 col-form-label">Артикул</label>
+                      <div class="col-sm-10">
+                        <div class="row">
+                          <div class="col-4">
+                            <input type="text" class="form-control" :value="sscc_info.S8581_ART_NR">
+                          </div>
+                          <div class="col-8">
+                            <input type="text" class="form-control" :value="sscc_info.S12_BEZ1">
+                          </div>
+                        </div>
+
+                      </div>
+                    </div>
+                    <div class="row mb-1">
+                      <label class="col-sm-2 col-form-label">GTIN</label>
+                      <div class="col-sm-10">
+                        <div class="row">
+                          <div class="col-4">
+                            <input type="text" class="form-control" :value="sscc_info.S8581_EAN_14">
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row mb-1">
+                      <label class="col-sm-2 col-form-label">BT</label>
+                      <div class="col-sm-10">
+                        <div class="row">
+                          <div class="col-4">
+                            <input type="text" class="form-control">
+                          </div>
+                          <div class="col-8">
+                            <input type="text" class="form-control">
+                          </div>
+                        </div>
+
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </fieldset>
+
+              <fieldset class="my-3">
+                <div class="row">
+                  <div class="col-6">
+                    <div class="row mb-1">
+                      <label class="col-sm-3 col-form-label">SSCC-ИД</label>
+                      <div class="col-sm-9">
+                        <input type="text" class="form-control" :value="sscc_info.S8583_NVE_ID">
+                      </div>
+                    </div>
+
+                    <div class="row mb-1">
+                      <label class="col-sm-3 col-form-label">Ссылка</label>
+                      <div class="col-sm-9">
+                        <input type="text" class="form-control" :value="sscc_info.S8581_NR">
+                      </div>
+                    </div>
+
+                    <div class="row mb-1">
+                      <label class="col-sm-3 col-form-label">Вариант</label>
+                      <div class="col-sm-9">
+                        <input type="text" class="form-control">
+                      </div>
+                    </div>
+
+                    <div class="row mb-1">
+                      <label class="col-sm-3 col-form-label">Ссылка по жив.</label>
+                      <div class="col-sm-9">
+                        <input type="text" class="form-control" :value="sscc_info.S8581_VI_REF_NR">
+                      </div>
+                    </div>
+                  </div>
+
+
+                  <div class="col-6">
+                    <div class="row mb-1">
+                      <label class="col-sm-3 col-form-label">Номер серии</label>
+                      <div class="col-sm-9">
+                        <input type="text" class="form-control" :value="sscc_info.S8581_CHARGE">
+                      </div>
+                    </div>
+
+                    <div class="row mb-1">
+                      <label class="col-sm-3 col-form-label">Произ. партия</label>
+                      <div class="col-sm-9">
+                        <input type="text" class="form-control" :value="sscc_info.S8581_LAGERTYP_LOS">
+                      </div>
+                    </div>
+
+                    <div class="row mb-1">
+                      <label class="col-sm-3 col-form-label">Идент. животного</label>
+                      <div class="col-sm-9">
+                        <input type="text" class="form-control" :value="sscc_info.S8581_TIER_IDENT">
+                      </div>
+                    </div>
+
+                    <div class="row mb-1">
+                      <label class="col-sm-3 col-form-label">Транспордер 1</label>
+                      <div class="col-sm-9">
+                        <input type="text" class="form-control" :value="sscc_info.L10_3">
+                      </div>
+                    </div>
+
+                    <div class="row mb-1">
+                      <label class="col-sm-3 col-form-label">Транспордер 2</label>
+                      <div class="col-sm-9">
+                        <input type="text" class="form-control">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </fieldset>
+
+              <fieldset>
+                <div class="row justify-content-between">
+                  <div class="col-4">
+                    <div class="row mb-1">
+                      <label class="col-sm-5 col-form-label">Создание</label>
+                      <div class="col-sm-7">
+                        <input type="date" class="form-control" :value="yyyymmddToDate(sscc_info.S8581_ANL_DATUM)">
+                      </div>
+                    </div>
+                    <div class="row mb-1">
+                      <label class="col-sm-5 col-form-label">Производство</label>
+                      <div class="col-sm-7">
+                        <input type="date" class="form-control" :value="yyyymmddToDate(sscc_info.S8581_DATUM_HERST)">
+                      </div>
+                    </div>
+                    <div class="row mb-1">
+                      <label class="col-sm-5 col-form-label">Конец гарантии</label>
+                      <div class="col-sm-7">
+                        <input type="text" class="form-control">
+                      </div>
+                    </div>
+                    <div class="row mb-1">
+                      <label class="col-sm-5 col-form-label">Истечение</label>
+                      <div class="col-sm-7">
+                        <input type="date" class="form-control" :value="yyyymmddToDate(sscc_info.S8581_DATUM_MHD)">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-4">
+                    <div class="row mb-1">
+                      <label class="col-sm-5 col-form-label">Комплектация</label>
+                      <div class="col-sm-7">
+                        <input type="text" class="form-control">
+                      </div>
+                    </div>
+
+                    <div class="row mb-1">
+                      <label class="col-sm-5 col-form-label">Маркировка</label>
+                      <div class="col-sm-7">
+                        <input type="date" class="form-control" :value="yyyymmddToDate(sscc_info.S8581_DATUM_PACK)">
+                      </div>
+                    </div>
+
+                    <div class="row mb-1">
+                      <label class="col-sm-5 col-form-label">Мин. срок хран.</label>
+                      <div class="col-sm-7">
+                        <input type="date" class="form-control" :value="yyyymmddToDate(sscc_info.S8581_DATUM_MHD)">
+                      </div>
+                    </div>
+
+                    <div class="row mb-1">
+                      <label class="col-sm-5 col-form-label">Заморозить</label>
+                      <div class="col-sm-7">
+                        <input type="text" class="form-control">
+                      </div>
+                    </div>
+
+
+                  </div>
+                </div>
+              </fieldset>
+
+            </v-card-text>
+          </v-card>
+        </div>
+        <div class="tab-pane fade" id="nav-volume" role="tabpanel" aria-labelledby="nav-volume-tab">
+          <v-card>
+            <v-card-text>
+              <div class="row">
+                <div class="col-6">
+                  <fieldset class="h-100">
+                    <div class="row mb-1">
+                      <label class="col-sm-4 col-form-label">Цен. единицы</label>
+                      <div class="col-sm-8">
+                        <div class="d-flex">
+                          <input type="text" class="col-sm-9 form-control" :value="parseFloat(sscc_info.S8581_MENGE_PE)">
+                          <input type="text" class="col-sm-3 form-control" :value="sscc_info.S12_EK_ME">
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="row mb-1">
+                      <label class="col-sm-4 col-form-label">Склад. единицы</label>
+                      <div class="col-sm-8">
+                        <div class="d-flex">
+                          <input type="text" class="col-sm-9 form-control" :value="parseFloat(sscc_info.S8581_MENGE_LE)">
+                          <input type="text" class="col-sm-3 form-control" :value="sscc_info.S12_LA_ME">
+                        </div>
+                      </div>
+                    </div>
+
+                  </fieldset>
+                </div>
+                <div class="col-6">
+                  <fieldset>
+                    <div class="row mb-1">
+                      <label class="col-sm-4 col-form-label">Число трасп. ед.</label>
+                      <div class="col-sm-8">
+                        <input type="text" class="form-control" :value="parseFloat(sscc_info.S8581_MENGE_LE)">
+                      </div>
+                    </div>
+
+                    <div class="row mb-1">
+                      <label class="col-sm-4 col-form-label">Кол-во в штука</label>
+                      <div class="col-sm-8">
+                        <input type="text" class="form-control" :value="parseFloat(sscc_info.S8581_MENGE_ST)">
+                      </div>
+                    </div>
+
+                    <div class="row mb-1">
+                      <label class="col-sm-4 col-form-label">Количество</label>
+                      <div class="col-sm-8">
+                        <input type="text" class="form-control">
+                      </div>
+                    </div>
+
+                  </fieldset>
+                </div>
+              </div>
+
+              <div class="row my-3">
+                <div class="col-6">
+                  <fieldset>
+                    <div class="row mb-1">
+                      <label class="col-sm-4 col-form-label">Брутто</label>
+                      <div class="col-sm-8">
+                        <div class="d-flex">
+                          <input type="text" class="col-sm-9 form-control" :value="parseFloat(sscc_info.S8581_BRUTTO_GEW)">
+                          <input type="text" class="col-sm-3 form-control" value="кг">
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="row mb-1">
+                      <label class="col-sm-4 col-form-label">Нетто</label>
+                      <div class="col-sm-8">
+                        <div class="d-flex">
+                          <input type="text" class="col-sm-9 form-control" :value="parseFloat(sscc_info.S8581_NETTO_GEW)">
+                          <input type="text" class="col-sm-3 form-control" value="кг">
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="row mb-1">
+                      <label class="col-sm-4 col-form-label">Тара</label>
+                      <div class="col-sm-8">
+                        <div class="d-flex">
+                          <input type="text" class="col-sm-9 form-control" :value="parseFloat(sscc_info.S8581_TARA)">
+                          <input type="text" class="col-sm-3 form-control" value="кг">
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="row mb-1">
+                      <label class="col-sm-4 col-form-label">Погруз. ср-ва</label>
+                      <div class="col-sm-8">
+                        <div class="d-flex">
+                          <input type="text" class="col-sm-9 form-control" :value="parseFloat(sscc_info.S8581_PALETTEN_GEW)">
+                          <input type="text" class="col-sm-3 form-control" value="кг">
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="row mb-1">
+                      <label class="col-sm-4 col-form-label">BT всего</label>
+                      <div class="col-sm-8">
+                        <div class="d-flex">
+                          <input type="text" class="col-sm-9 form-control" :value="parseFloat(sscc_info.S8581_PALETTEN_GEW)">
+                          <input type="text" class="col-sm-3 form-control" value="кг">
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row mb-1">
+                      <label class="col-sm-4 col-form-label">Контроль</label>
+                      <div class="col-sm-8">
+                        <div class="d-flex">
+                          <input type="text" class="col-sm-9 form-control" :value="parseFloat(sscc_info.S8581_KONTROLL_GEW)">
+                          <input type="text" class="col-sm-3 form-control" value="кг">
+                        </div>
+                      </div>
+                    </div>
+
+                  </fieldset>
+                </div>
+                <div class="col-6">
+                  <fieldset class="h-100">
+                    <div class="row mb-1">
+                      <label class="col-sm-4 col-form-label">Макс. трансп. уп.</label>
+                      <div class="col-sm-8">
+                        <input type="text" class="form-control">
+                      </div>
+                    </div>
+                    <div class="row mb-1">
+                      <label class="col-sm-4 col-form-label">Число пачек</label>
+                      <div class="col-sm-8">
+                        <input type="text" class="form-control">
+                      </div>
+                    </div>
+
+                    <div class="row mb-1">
+                      <label class="col-sm-4 col-form-label">Число трасп. уп. на пачку</label>
+                      <div class="col-sm-8">
+                        <input type="text" class="form-control">
+                      </div>
+                    </div>
+                  </fieldset>
+                </div>
+              </div>
+            </v-card-text>
+          </v-card>
+        </div>
+        <div class="tab-pane fade" id="nav-lager" role="tabpanel" aria-labelledby="nav-lager-tab">
+          <v-card>
+            <v-card-text>
+              <fieldset>
+                <div class="row mb-1">
+                  <label class="col-sm-2 col-form-label">Склад</label>
+                  <div class="col-sm-10">
+                    <div class="row">
+                      <div class="col-3">
+                        <input type="text" class="form-control" :value="sscc_info.S8583_KST_NR">
+                      </div>
+                      <div class="col-9">
+                        <input type="text" class="form-control">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="row mb-1">
+                  <label class="col-sm-2 col-form-label">Ведение склада</label>
+                  <div class="col-sm-10">
+                    <input type="text" class="form-control" value="Номер клиента - Дата партии - № лота" disabled>
+                  </div>
+                </div>
+                <div class="row mb-1">
+                  <label class="col-sm-2 col-form-label"></label>
+                  <div class="col-sm-10">
+                    <input type="text" class="form-control" :value="account">
+                  </div>
+                </div>
+                <div class="row mb-1">
+                  <label class="col-sm-2 col-form-label">Складское место</label>
+                  <div class="col-sm-10">
+                    <div class="row">
+                      <div class="col-3">
+                        <input type="text" class="form-control">
+                      </div>
+                      <div class="col-9">
+                        <input type="text" class="form-control">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="row mb-1">
+                  <label class="col-sm-2 col-form-label">План. вывод со склада</label>
+                  <div class="col-sm-10">
+                    <div class="row">
+                      <div class="col-3">
+                        <input type="text" class="form-control">
+                      </div>
+                      <div class="col-9">
+                        <input type="text" class="form-control">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </fieldset>
+            </v-card-text>
+          </v-card>
+        </div>
+      </div>
+    </v-card-text>
+  </v-card>
+</template>
+
+<style scoped>
+fieldset {
+  display: block;
+  margin-inline-start: 2px;
+  margin-inline-end: 2px;
+  border: groove 2px ThreeDFace;
+  padding-block-start: 0.35em;
+  padding-inline-end: 0.75em;
+  padding-block-end: 0.625em;
+  padding-inline-start: 0.75em;
+  min-inline-size: min-content;
+}
+
+legend {
+  padding-inline-start: 2px;
+  padding-inline-end: 2px;
+}
+
+.form-control {
+  font-size: .7rem;
+}
+
+</style>
