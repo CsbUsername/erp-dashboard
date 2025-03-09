@@ -63,7 +63,7 @@ const routes = [
   {
     path: "/sscc",
     children: [
-      { path: "change_labeling", component: Page404 },
+      { path: "change_labeling", component: AppSSCCInfo },
     ],
   },
   {

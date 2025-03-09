@@ -3,6 +3,7 @@ import httpMixin from "@/mixins/httpMixin.js";
 import {URLS} from "@/constants/urls.js";
 
 export default {
+
   mixins: [httpMixin],
   emits: ['changeArt'],
   props: {
@@ -12,13 +13,23 @@ export default {
     }
   },
   data: () => ({
-    sscc_info: {}
+    sscc_info: {},
+    items: [
+      {title: 'Click Me'},
+      {title: 'Click Me'},
+      {title: 'Click Me'},
+      {title: 'Click Me 2'},
+    ]
   }),
   methods: {
     yyyymmddToDate(dateString) {
       if (dateString) {
         return `${dateString.substring(0, 4)}-${dateString.substring(4, 6)}-${dateString.substring(6, 8)}`;
       }
+    },
+
+    toFloat(number) {
+      return (number) ? parseFloat(number) : 0;
     },
 
     async load_details() {
@@ -36,10 +47,10 @@ export default {
     }
   },
   mounted() {
-    this.load_details()
+    // this.load_details()
   },
   updated() {
-    this.load_details()
+    // this.load_details()
   }
 }
 </script>
@@ -58,6 +69,26 @@ export default {
           <button class="nav-link" id="nav-lager-tab" data-bs-toggle="tab" data-bs-target="#nav-lager" type="button"
                   role="tab" aria-controls="nav-lager" aria-selected="false">Складская информация
           </button>
+          <button class="nav-link" id="nav-lager-tab" data-bs-toggle="tab" data-bs-target="#nav-lager" type="button"
+                  role="tab" aria-controls="nav-lager" aria-selected="false">Суб-SSCC
+          </button>
+        </div>
+        <div class="menu">
+          <v-menu>
+            <template v-slot:activator="{ props }">
+              <v-btn icon="mdi-menu" variant="text" v-bind="props"></v-btn>
+            </template>
+
+            <v-list>
+              <v-list-item
+                v-for="(item, i) in items"
+                :key="i"
+                :value="i"
+              >
+                <v-list-item-title>{{ item.title }}</v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-menu>
         </div>
       </nav>
       <div class="tab-content" id="nav-tabContent">
@@ -238,7 +269,6 @@ export default {
                       </div>
                     </div>
 
-
                   </div>
                 </div>
               </fieldset>
@@ -256,7 +286,7 @@ export default {
                       <label class="col-sm-4 col-form-label">Цен. единицы</label>
                       <div class="col-sm-8">
                         <div class="d-flex">
-                          <input type="text" class="col-sm-9 form-control" :value="parseFloat(sscc_info.S8581_MENGE_PE)">
+                          <input type="text" class="col-sm-9 form-control" :value="toFloat(sscc_info.S8581_MENGE_PE)">
                           <input type="text" class="col-sm-3 form-control" :value="sscc_info.S12_EK_ME">
                         </div>
                       </div>
@@ -266,7 +296,7 @@ export default {
                       <label class="col-sm-4 col-form-label">Склад. единицы</label>
                       <div class="col-sm-8">
                         <div class="d-flex">
-                          <input type="text" class="col-sm-9 form-control" :value="parseFloat(sscc_info.S8581_MENGE_LE)">
+                          <input type="text" class="col-sm-9 form-control" :value="toFloat(sscc_info.S8581_MENGE_LE)">
                           <input type="text" class="col-sm-3 form-control" :value="sscc_info.S12_LA_ME">
                         </div>
                       </div>
@@ -279,14 +309,14 @@ export default {
                     <div class="row mb-1">
                       <label class="col-sm-4 col-form-label">Число трасп. ед.</label>
                       <div class="col-sm-8">
-                        <input type="text" class="form-control" :value="parseFloat(sscc_info.S8581_MENGE_LE)">
+                        <input type="text" class="form-control" :value="toFloat(sscc_info.S8581_MENGE_LE)">
                       </div>
                     </div>
 
                     <div class="row mb-1">
                       <label class="col-sm-4 col-form-label">Кол-во в штука</label>
                       <div class="col-sm-8">
-                        <input type="text" class="form-control" :value="parseFloat(sscc_info.S8581_MENGE_ST)">
+                        <input type="text" class="form-control" :value="toFloat(sscc_info.S8581_MENGE_ST)">
                       </div>
                     </div>
 
@@ -308,7 +338,7 @@ export default {
                       <label class="col-sm-4 col-form-label">Брутто</label>
                       <div class="col-sm-8">
                         <div class="d-flex">
-                          <input type="text" class="col-sm-9 form-control" :value="parseFloat(sscc_info.S8581_BRUTTO_GEW)">
+                          <input type="text" class="col-sm-9 form-control" :value="toFloat(sscc_info.S8581_BRUTTO_GEW)">
                           <input type="text" class="col-sm-3 form-control" value="кг">
                         </div>
                       </div>
@@ -318,7 +348,7 @@ export default {
                       <label class="col-sm-4 col-form-label">Нетто</label>
                       <div class="col-sm-8">
                         <div class="d-flex">
-                          <input type="text" class="col-sm-9 form-control" :value="parseFloat(sscc_info.S8581_NETTO_GEW)">
+                          <input type="text" class="col-sm-9 form-control" :value="toFloat(sscc_info.S8581_NETTO_GEW)">
                           <input type="text" class="col-sm-3 form-control" value="кг">
                         </div>
                       </div>
@@ -328,7 +358,7 @@ export default {
                       <label class="col-sm-4 col-form-label">Тара</label>
                       <div class="col-sm-8">
                         <div class="d-flex">
-                          <input type="text" class="col-sm-9 form-control" :value="parseFloat(sscc_info.S8581_TARA)">
+                          <input type="text" class="col-sm-9 form-control" :value="toFloat(sscc_info.S8581_TARA)">
                           <input type="text" class="col-sm-3 form-control" value="кг">
                         </div>
                       </div>
@@ -338,7 +368,8 @@ export default {
                       <label class="col-sm-4 col-form-label">Погруз. ср-ва</label>
                       <div class="col-sm-8">
                         <div class="d-flex">
-                          <input type="text" class="col-sm-9 form-control" :value="parseFloat(sscc_info.S8581_PALETTEN_GEW)">
+                          <input type="text" class="col-sm-9 form-control"
+                                 :value="toFloat(sscc_info.S8581_PALETTEN_GEW)">
                           <input type="text" class="col-sm-3 form-control" value="кг">
                         </div>
                       </div>
@@ -348,7 +379,8 @@ export default {
                       <label class="col-sm-4 col-form-label">BT всего</label>
                       <div class="col-sm-8">
                         <div class="d-flex">
-                          <input type="text" class="col-sm-9 form-control" :value="parseFloat(sscc_info.S8581_PALETTEN_GEW)">
+                          <input type="text" class="col-sm-9 form-control"
+                                 :value="toFloat(sscc_info.S8581_PALETTEN_GEW)">
                           <input type="text" class="col-sm-3 form-control" value="кг">
                         </div>
                       </div>
@@ -357,7 +389,8 @@ export default {
                       <label class="col-sm-4 col-form-label">Контроль</label>
                       <div class="col-sm-8">
                         <div class="d-flex">
-                          <input type="text" class="col-sm-9 form-control" :value="parseFloat(sscc_info.S8581_KONTROLL_GEW)">
+                          <input type="text" class="col-sm-9 form-control"
+                                 :value="toFloat(sscc_info.S8581_KONTROLL_GEW)">
                           <input type="text" class="col-sm-3 form-control" value="кг">
                         </div>
                       </div>
@@ -478,4 +511,9 @@ legend {
   font-size: .7rem;
 }
 
+.menu{
+  position: absolute;
+  top: 0;
+  right: 0;
+}
 </style>

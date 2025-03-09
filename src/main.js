@@ -6,15 +6,17 @@
 
 // Plugins
 import { registerPlugins } from '@/plugins'
-import '@/assets/css/bootstrap.min.css'
-import 'bootstrap/dist/css/bootstrap.css'
+
 import 'jquery/dist/jquery.js'
 import 'bootstrap/dist/js/bootstrap.js'
 // Components
 import App from './App.vue'
+import '@/assets/css/bootstrap.min.css'
 
 // Composables
 import { createApp } from 'vue'
+
+
 
 const app = createApp(App)
 
