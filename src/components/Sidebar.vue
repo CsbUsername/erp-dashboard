@@ -7,6 +7,12 @@ export default {
       d: this.drawer
     }
   },
+  computed: {
+    username() {
+      const token_data = JSON.parse(localStorage.getItem('token'))
+      return token_data.username || 'Guest'
+    }
+  },
 
   updated() {
     this.d = this.drawer
@@ -21,8 +27,11 @@ export default {
           <v-img src="@/assets/avatar.png"></v-img>
         </v-avatar>
       </v-progress-circular>
-      <div class="mt-4">%Username%</div>
+      <div class="mt-4">{{ username }}</div>
       <span class="mb-6 text-caption">username@apkholding.ru</span>
+      <div>
+        <span class="mb-6 text-caption">Версия 0.0.1</span>
+      </div>
     </v-sheet>
 
     <v-list>

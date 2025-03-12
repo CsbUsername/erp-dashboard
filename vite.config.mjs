@@ -11,7 +11,7 @@ import { fileURLToPath, URL } from 'node:url'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  base: '/erp/',
+  base: '/erp/dashboard',
   plugins: [
     VueRouter(),
     Vue({

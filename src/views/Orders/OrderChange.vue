@@ -125,9 +125,9 @@ export default {
                   </tr>
                   </thead>
                   <tbody>
-                  <tr v-for="row in details.header">
+                  <tr>
                     <td v-for="title in header_titles">
-                      {{ row[title] }}
+                      {{ details.header[title] }}
                     </td>
                   </tr>
                   </tbody>

@@ -17,7 +17,8 @@ export default {
 
       try {
         // Получаем userid из localStorage
-        const userId = localStorage.getItem("userid");
+        const token_data = JSON.parse(localStorage.getItem('token')) || {};
+        const userId = token_data.userid || '';
 
         if(isUserID){
           // Добавляем пользовательский заголовок
