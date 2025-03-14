@@ -63,6 +63,7 @@ const routes = [
   {
     path: "/sscc",
     children: [
+      { path: "information", component: AppSSCCInfo },
       { path: "change_labeling", component: Page404 },
     ],
   },
@@ -72,6 +73,7 @@ const routes = [
       { path: "carcasses", component: Page404 },
     ],
   },
+
   // Обработка неизвестных маршрутов
   { path: "/:pathMatch(.*)*", name: "NotFound", component: Page404 },
 ];

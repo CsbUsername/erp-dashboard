@@ -1,26 +1,34 @@
 <script>
 import httpMixin from "@/mixins/httpMixin.js";
-import {URLS} from "@/constants/urls.js";
+import { URLS } from "@/constants/urls.js";
 
 export default {
-
   mixins: [httpMixin],
   emits: ['changeArt'],
   props: {
     sscc: {
       type: String,
-      required: true
+      default: '' // Указываем значение по умолчанию
     }
   },
-  data: () => ({
-    sscc_info: {},
-    items: [
-      {title: 'Click Me'},
-      {title: 'Click Me'},
-      {title: 'Click Me'},
-      {title: 'Click Me 2'},
-    ]
-  }),
+  data() {
+    return {
+      sscc_info: {},
+      items: [
+        { title: 'Click Me' },
+        { title: 'Click Me' },
+        { title: 'Click Me' },
+        { title: 'Click Me 2' },
+      ],
+      localSscc: this.sscc || '' // Используем значение по умолчанию, если sscc не передан
+    };
+  },
+  watch: {
+    // Следим за изменением props.sscc и обновляем localSscc
+    sscc(newVal) {
+      this.localSscc = newVal;
+    }
+  },
   methods: {
     yyyymmddToDate(dateString) {
       if (dateString) {
@@ -33,27 +41,29 @@ export default {
     },
 
     async load_details() {
-      this.sscc_info = await this.sendRequest({
-        method: "GET",
-        url: URLS.SSCC.MAIN_INFORMATION + this.sscc
-      })
+      if (this.localSscc) {
+        this.sscc_info = await this.sendRequest({
+          method: "GET",
+          url: URLS.SSCC.MAIN_INFORMATION + this.localSscc
+        });
 
-      this.$emit('changeArt', this.sscc_info.S8581_ART_NR)
+        this.$emit('changeArt', this.sscc_info.S8581_ART_NR);
+      }
     }
   },
   computed: {
     account() {
-      return `${this.sscc_info.S8583_LAGERTYP_NR} - ${this.sscc_info.S8583_LAGERTYP_DATUM} - ${this.sscc_info.S8583_LAGERTYP_LOS}`
+      return `${this.sscc_info.S8583_LAGERTYP_NR} - ${this.sscc_info.S8583_LAGERTYP_DATUM} - ${this.sscc_info.S8583_LAGERTYP_LOS}`;
     }
   },
-  mounted() {
-    // this.load_details()
-  },
-  updated() {
-    // this.load_details()
+  async beforeMount() {
+    if(this.sscc) {
+      await this.load_details();
+    }
   }
-}
+};
 </script>
+
 
 <template>
   <v-card>
@@ -95,6 +105,15 @@ export default {
         <div class="tab-pane fade show active" id="nav-main" role="tabpanel" aria-labelledby="nav-main-tab">
           <v-card>
             <v-card-text>
+              <fieldset class="mb-3">
+                <div class="row">
+                  <label class="col-sm-2 col-form-label">SSCC</label>
+                  <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="localSscc" @keyup.enter="load_details">
+                  </div>
+
+                </div>
+              </fieldset>
               <fieldset>
                 <div class="row">
                   <div class="col-12">

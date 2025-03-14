@@ -46,6 +46,7 @@ const links = [
     item: 'sscc',
     title: 'SSCC',
     items: [
+      {text: 'Информация', url: '/information', icon: 'mdi mdi-format-list-bulleted'},
       {text: 'Изменение маркировки', url: '/change_labeling', icon: 'mdi mdi-format-list-bulleted'}
     ]
   },

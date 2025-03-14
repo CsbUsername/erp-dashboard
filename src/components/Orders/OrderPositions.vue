@@ -2,12 +2,16 @@
 import fieldsMixin from "@/mixins/fieldsMixin.js";
 import httpMixin from "@/mixins/httpMixin.js";
 import {URLS} from "@/constants/urls.js";
+import AppSSCCInfo from "@/components/AppSSCCInfo.vue";
 
 export default {
+  components: {AppSSCCInfo},
   props: ['positions', 'sscc_list', 'fields', 'details'],
   mixins: [fieldsMixin, httpMixin],
   data: ()=> ({
-    articuls: {}
+    articuls: {},
+    showDetails: false,
+    showDetailsSSCC: '',
   }),
   methods: {
     async getMixBoxes(ober_nve, art) {
@@ -66,6 +70,11 @@ export default {
     getTotalSum(art_nr, field) {
       const data = this.getDetailsMixPallet(art_nr)
       return  data.reduce((sum, item) => sum + parseFloat(item[field]), 0).toFixed(3);
+    },
+
+    showSSCC(sscc){
+      this.showDetailsSSCC = sscc
+      this.showDetails =!this.showDetails
     }
   }
 }
@@ -115,7 +124,7 @@ export default {
 
             <v-expansion-panel-text>
               <v-row no-gutters>
-                <v-table class="table table-bordered table-responsive-sm" density="compact">
+                <v-table class="table table-bordered table-responsive-sm table-striped" density="compact">
                   <thead>
                   <tr>
                     <th>{{ getKurzBezByKey('S8586_NVE') }}</th>
@@ -131,7 +140,9 @@ export default {
                   </thead>
                   <tbody>
                   <tr v-for="sscc in getDetailsMixPallet(item.FA077_ART_NR )">
-                    <td class="font-weight-bold">{{ sscc.S8586_NVE }}</td>
+                    <td class="font-weight-bold order-sscc" @click="showSSCC(sscc.S8586_NVE )">
+                      {{ sscc.S8586_NVE }}
+                    </td>
                     <td>{{ sscc.S8586_ADR_NR }}</td>
                     <td>{{ sscc.S8581_ART_NR }}</td>
                     <td>{{ parseFloat(sscc.S8581_MENGE_LE) }}</td>
@@ -161,9 +172,41 @@ export default {
         </v-expansion-panels>
       </v-col>
     </v-row>
+
+    <div class="text-center pa-4 overflow-y-scroll">
+      <v-dialog
+        v-model="showDetails"
+        transition="dialog-bottom-transition"
+        fullscreen
+      >
+        <v-card >
+          <v-toolbar color="primary">
+            <v-spacer></v-spacer>
+
+            <v-toolbar-items>
+              <v-btn
+                prepend-icon="mdi-close"
+                variant="text"
+                @click="showDetails = false"
+              ></v-btn>
+            </v-toolbar-items>
+          </v-toolbar>
+
+          <AppSSCCInfo :sscc="showDetailsSSCC"/>
+        </v-card>
+      </v-dialog>
+    </div>
   </v-container>
 </template>
 
 <style scoped>
+  .order-sscc{
+    text-decoration: underline
+  }
 
+  .order-sscc:hover{
+    text-decoration: none;
+    cursor: pointer;
+    color: blue;
+  }
 </style>
