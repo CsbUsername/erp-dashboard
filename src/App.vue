@@ -1,6 +1,10 @@
 <template>
   <v-app v-if="isLogined">
-    <Sidebar :links="sidebarLinks" :drawer="drawer"/>
+    <Sidebar
+      :links="sidebarLinks"
+      :drawer="drawer"
+      :version="appVersion"
+    />
     <v-main>
       <v-app-bar :elevation="1" rounded>
         <template v-slot:prepend>
@@ -13,15 +17,28 @@
               Dashboard ERP
             </router-link>
 
-            <v-btn
-              class="text-none mr-2"
-              color="red-darken-4"
-              rounded="5"
-              variant="outlined"
-              @click="handleLogout"
-            >
-              Выйти
-            </v-btn>
+            <div class="buttons-wrapper">
+              <v-btn
+                class="text-none mr-2"
+                color="blue-darken-4"
+                rounded="5"
+                variant="outlined"
+                prepend-icon="mdi-comment-quote-outline"
+                @click="isFeedback = !isFeedback"
+              >
+                Обратная связь
+              </v-btn>
+
+              <v-btn
+                class="text-none mr-2"
+                color="red-darken-4"
+                rounded="5"
+                variant="outlined"
+                @click="handleLogout"
+              >
+                Выйти
+              </v-btn>
+            </div>
           </div>
 
 
@@ -29,43 +46,74 @@
       </v-app-bar>
 
       <router-view :key="$route.fullPath"/>
+      <AppFeedback
+        v-if="isFeedback"
+        @close-feedback="isFeedback = false"
+        @keyup.esc="isFeedback = false"
+      />
     </v-main>
   </v-app>
-  <AppLoginForm v-if="!isLogined" @is-login="handlerIsLogin" :allowedGroups="['0']"/>
+  <AppLoginForm
+    v-if="!isLogined"
+    @is-login="handlerIsLogin"
+    :allowedGroups="['0']"/>
 </template>
 
 <script>
 import Sidebar from "@/components/Sidebar.vue";
 import routers_list from "@/router/routers_list.js";
 import AppLoginForm from "@/components/AppLoginForm.vue";
+import AppFeedback from "@/components/AppFeedback.vue";
+import packageJson from '../package.json';
+import accessMixin from "@/mixins/accessMixin.js";
+import httpMixin from "@/mixins/httpMixin.js"; // Импортируем версию из package.json
+
 
 export default {
-  components: {AppLoginForm, Sidebar},
+  name: "App",
+  components: {AppFeedback, AppLoginForm, Sidebar},
+  mixins: [accessMixin, httpMixin],
   data: () => ({
     drawer: true,
     sidebarLinks: routers_list,
     loading: false,
     isLogined: false,
+    isFeedback: false,
+    appVersion: packageJson.version,
   }),
 
   methods: {
     toggleDrawer() {
       this.drawer = !this.drawer;
     },
-    handlerIsLogin(data){
+    handlerIsLogin(data) {
       console.log(data)
       this.isLogined = data.isLogin;
     },
-    handleLogout(){
+    handleLogout() {
       localStorage.removeItem('token')
       this.isLogined = false
     }
   },
 
-  beforeMount() {
+  async beforeMount() {
     if (localStorage.getItem('token')) {
       this.isLogined = true;
     }
+
+    // Проверка версии приложения
+    const savedVersion = localStorage.getItem('appVersion');
+    if (savedVersion !== this.appVersion) {
+      localStorage.setItem('appVersion', this.appVersion);
+      window.location.reload(true); // Принудительная перезагрузка
+    }
+
+    await this.send_log({
+      userid: this.user_id,
+      fullname: this.username,
+      component_id: this.$options.name,
+      description: `Загрузка приложения. Вошел пользователь ${this.user_id} (${this.username})`,
+    })
   }
 }
 </script>

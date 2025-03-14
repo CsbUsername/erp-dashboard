@@ -1,7 +1,8 @@
 <script>
 
+
 export default {
-  props: ['links', 'drawer'],
+  props: ['links', 'drawer', 'version'],
   data() {
     return {
       d: this.drawer
@@ -30,7 +31,7 @@ export default {
       <div class="mt-4">{{ username }}</div>
       <span class="mb-6 text-caption">username@apkholding.ru</span>
       <div>
-        <span class="mb-6 text-caption">Версия 0.0.1</span>
+        <span class="mb-6 text-caption">{{ version }}</span>
       </div>
     </v-sheet>
 

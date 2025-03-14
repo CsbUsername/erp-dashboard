@@ -8,10 +8,12 @@ import VueRouter from 'unplugin-vue-router/vite'
 // Utilities
 import { defineConfig } from 'vite'
 import { fileURLToPath, URL } from 'node:url'
+import packageJson from './package.json'; // Импортируем версию из package.json
+
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  base: '/erp/dashboard',
+  base: '/erp_dashboard',
   plugins: [
     VueRouter(),
     Vue({
@@ -56,6 +58,14 @@ export default defineConfig({
     preprocessorOptions: {
       sass: {
         api: 'modern-compiler',
+      },
+    },
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        entryFileNames: `[name].[hash].js`, // Добавляет хэш к именам JS-файлов
+        assetFileNames: `[name].[hash].[ext]`, // Добавляет хэш к именам других ресурсов (CSS, изображения и т.д.)
       },
     },
   },

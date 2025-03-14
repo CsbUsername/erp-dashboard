@@ -2,11 +2,12 @@
 import AppSSCCInfo from '@/components/AppSSCCInfo.vue'
 import {DT, DT_BASE_URL, DT_HANDLE_URL} from "@/constants/dt.js";
 import httpMixin from "@/mixins/httpMixin.js";
+import accessMixin from "@/mixins/accessMixin.js";
 
 export default {
   name: "EquipmentModal",
   components: {AppSSCCInfo},
-  mixins: [httpMixin],
+  mixins: [httpMixin, accessMixin],
   props: {
     dialog: {
       type: Boolean,
@@ -78,8 +79,16 @@ export default {
         const add = await this.send_dt_commnad(DT.ORDER.ADD, {
           'position_id': position_id,
           'sscc': this.eq_sscc,
-          'user_id': '2051'
+          'user_id': this.user_id
         }, handleId)
+
+        await this.send_log({
+          userid: this.user_id,
+          fullname: this.username,
+          component_id: this.$options.name,
+          description: `В заказ ${this.orderId} добавлено SSCC ${this.eq_sscc}`
+        })
+
         if (add.error) {
           this.error = 'Load SSCC error: ' + (add.error[0]?.L1_3 ? add.error[0]?.L1_3 : add.error.L1_3)
           return false

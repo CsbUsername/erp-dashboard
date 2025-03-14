@@ -3,10 +3,12 @@ import httpMixin from "@/mixins/httpMixin.js";
 import {URLS} from "@/constants/urls.js";
 import fieldsMixin from "@/mixins/fieldsMixin.js";
 import OrderEditingCell from "@/components/Orders/OrderEditingCell.vue";
+import accessMixin from "@/mixins/accessMixin.js";
 
 export default {
+  name: "OrderChange",
   components: {OrderEditingCell},
-  mixins: [httpMixin, fieldsMixin],
+  mixins: [httpMixin, fieldsMixin, accessMixin],
   data: () => ({
     order: null,
     fields: {},
@@ -61,6 +63,14 @@ export default {
     async saveCell(field, value, art) {
       const elem = this.details.positions.find(el => el.FA077_ART_NR === art);
       elem[field] = value;
+
+      await this.send_log({
+        userid: this.user_id,
+        fullname: this.username,
+        component_id: this.$options.name,
+        description: `Изменение поля ${field} заказа ${this.order} на значение ${value} (артикул ${art})`
+      })
+
       const response = await this.sendRequest({
         method: "POST",
         url: URLS.ORDERS.UPDATE_ORDER_POSITIONS,

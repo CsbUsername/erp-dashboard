@@ -81,6 +81,22 @@ export default {
       }
 
       return {'withoutRespsonse': resposne['soa-result'] }
+    },
+
+    async send_log({userid, fullname, component_id, description}){
+      const response = await this.sendRequest({
+        method: 'POST',
+        url: URLS.SERVICE.LOGGER,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        data: JSON.stringify({
+          userid: userid,
+          fullname: fullname,
+          component_id: component_id,
+          description: description,
+        })
+      })
     }
   }
 }

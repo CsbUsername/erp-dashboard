@@ -12,7 +12,7 @@ export default{
 
     user_id() {
       const token_data = JSON.parse(localStorage.getItem('token'))
-      return token_data.user_id || null
+      return token_data.userid || null
     },
   }
 }
