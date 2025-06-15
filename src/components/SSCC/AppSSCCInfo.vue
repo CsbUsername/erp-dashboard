@@ -1,9 +1,12 @@
 <script>
 import httpMixin from "@/mixins/httpMixin.js";
 import { URLS } from "@/constants/urls.js";
+import AppSSCCSub from "@/components/SSCC/AppSSCCSub.vue";
+import utilsMixin from "@/mixins/utilsMixin.js";
 
 export default {
-  mixins: [httpMixin],
+  components: {AppSSCCSub},
+  mixins: [httpMixin, utilsMixin],
   emits: ['changeArt'],
   props: {
     sscc: {
@@ -53,7 +56,7 @@ export default {
   },
   computed: {
     account() {
-      return `${this.sscc_info.S8583_LAGERTYP_NR} - ${this.sscc_info.S8583_LAGERTYP_DATUM} - ${this.sscc_info.S8583_LAGERTYP_LOS}`;
+      return `${this.sscc_info.S8583_LAGERTYP_NR} - ${this.formatDateFromYYYYMMDD(this.sscc_info.S8583_LAGERTYP_DATUM)} - ${this.sscc_info.S8583_LAGERTYP_LOS}`;
     }
   },
   async beforeMount() {
@@ -66,7 +69,7 @@ export default {
 
 
 <template>
-  <v-card>
+  <v-card class="app-sscc-info">
     <v-card-text>
       <nav>
         <div class="nav nav-tabs" id="nav-tab" role="tablist">
@@ -79,8 +82,8 @@ export default {
           <button class="nav-link" id="nav-lager-tab" data-bs-toggle="tab" data-bs-target="#nav-lager" type="button"
                   role="tab" aria-controls="nav-lager" aria-selected="false">Складская информация
           </button>
-          <button class="nav-link" id="nav-lager-tab" data-bs-toggle="tab" data-bs-target="#nav-lager" type="button"
-                  role="tab" aria-controls="nav-lager" aria-selected="false">Суб-SSCC
+          <button class="nav-link" id="nav-sub-tab" data-bs-toggle="tab" data-bs-target="#nav-sub" type="button"
+                  role="tab" aria-controls="nav-sub" aria-selected="false">Суб-SSCC
           </button>
         </div>
         <div class="menu">
@@ -503,31 +506,21 @@ export default {
             </v-card-text>
           </v-card>
         </div>
-      </div>
+        <div class="tab-pane fade" id="nav-sub" role="tabpanel" aria-labelledby="nav-sub-tab">
+          <AppSSCCSub :ober-nve="localSscc" v-if="localSscc"/>
+        </div>
+        </div>
     </v-card-text>
   </v-card>
 </template>
 
 <style scoped>
-fieldset {
-  display: block;
-  margin-inline-start: 2px;
-  margin-inline-end: 2px;
-  border: groove 2px ThreeDFace;
-  padding-block-start: 0.35em;
-  padding-inline-end: 0.75em;
-  padding-block-end: 0.625em;
-  padding-inline-start: 0.75em;
-  min-inline-size: min-content;
-}
-
-legend {
-  padding-inline-start: 2px;
-  padding-inline-end: 2px;
+.app-sscc-info{
+  overflow-y: auto;
 }
 
 .form-control {
-  font-size: .7rem;
+  font-size: .9rem;
 }
 
 .menu{

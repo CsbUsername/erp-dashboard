@@ -57,6 +57,44 @@ const links = [
       {text: 'Туши в 100', url: '/carcasses', icon: 'mdi mdi-format-list-bulleted'}
     ]
   },
+  {
+    item: 'ctf',
+    title: 'ЦТФ',
+    items: [
+      {text: 'Отгрузка жира', url: '/fat-shipping', icon: 'mdi mdi-format-list-bulleted'},
+      {text: 'Блокировка', url: '/block', icon: 'mdi mdi-format-list-bulleted'},
+      {text: 'Создать поставку', url: '/new-delivery', icon: 'mdi mdi-format-list-bulleted'}
+    ]
+  },
+  {
+    item: 'packing',
+    title: 'Упаковка',
+    items: [
+      {text: 'Квант пленка', url: '/quant_film', icon: 'mdi mdi-format-list-bulleted'},
+    ]
+  },
+  {
+    item: 'sql_server',
+    title: 'SQL Server',
+    items: [
+      {text: 'Порты CSB TEST', url: '/csb-test-ports', icon: 'mdi mdi-format-list-bulleted'}
+    ]
+  },
+  {
+    item: 'qm',
+    title: 'QM',
+    items: [
+      {text: 'Журнал (форма 36) 1 смена', url: '/journal_form_36_1_shift', icon: 'mdi mdi-format-list-bulleted'},
+      {text: 'Журнал (форма 36) 2 смена', url: '/journal_form_36_2_shift', icon: 'mdi mdi-format-list-bulleted'}
+    ]
+  },
+  {
+    item: 'edi',
+    title: 'EDI',
+    items: [
+      {text: 'Просмот текстов JOBs', url: '/edi_job_text', icon: 'mdi mdi-format-list-bulleted'}
+    ]
+  }
 ]
 
 const routers = links.map(link => ({
@@ -65,7 +103,6 @@ const routers = links.map(link => ({
     ...item,
     url: `/${link.item}${item.url.trim()}/`,
   }))
-}))
-
+})).sort((a, b) => a.title.localeCompare(b.title))
 
 export default routers

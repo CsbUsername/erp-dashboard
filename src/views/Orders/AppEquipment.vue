@@ -3,7 +3,7 @@
   import {URLS} from "@/constants/urls.js"
   import fieldsMixin from "@/mixins/fieldsMixin.js";
   import EquipmentModal from "@/components/Orders/EquipmentModal.vue";
-  import AppSSCCInfo from "@/components/AppSSCCInfo.vue";
+  import AppSSCCInfo from "@/components/SSCC/AppSSCCInfo.vue";
 
   export default {
     name: "AppEquipment",

@@ -5,6 +5,13 @@
       :drawer="drawer"
       :version="appVersion"
     />
+    <ChangelogDialog
+      v-if="isLogined"
+      ref="changelogDialog"
+      :version="appVersion"
+      :changelog="changelog"
+    />
+
     <v-main>
       <v-app-bar :elevation="1" rounded>
         <template v-slot:prepend>
@@ -25,6 +32,7 @@
                 variant="outlined"
                 prepend-icon="mdi-comment-quote-outline"
                 @click="isFeedback = !isFeedback"
+                v-model="isFeedback"
               >
                 Обратная связь
               </v-btn>
@@ -47,7 +55,7 @@
 
       <router-view :key="$route.fullPath"/>
       <AppFeedback
-        v-if="isFeedback"
+        :is-show-feedback-dialog="isFeedback"
         @close-feedback="isFeedback = false"
         @keyup.esc="isFeedback = false"
       />
@@ -67,11 +75,12 @@ import AppFeedback from "@/components/AppFeedback.vue";
 import packageJson from '../package.json';
 import accessMixin from "@/mixins/accessMixin.js";
 import httpMixin from "@/mixins/httpMixin.js"; // Импортируем версию из package.json
+import ChangelogDialog from "@/components/ChangelogDialog.vue";
 
 
 export default {
   name: "App",
-  components: {AppFeedback, AppLoginForm, Sidebar},
+  components: {AppFeedback, AppLoginForm, Sidebar, ChangelogDialog},
   mixins: [accessMixin, httpMixin],
   data: () => ({
     drawer: true,
@@ -80,6 +89,10 @@ export default {
     isLogined: false,
     isFeedback: false,
     appVersion: packageJson.version,
+    showChangelog: false,
+    changelog: [
+      'Изменен функционал приема машин на ЦТФ',
+    ]
   }),
 
   methods: {
@@ -99,6 +112,15 @@ export default {
   async beforeMount() {
     if (localStorage.getItem('token')) {
       this.isLogined = true;
+    }
+
+    // Показываем changelog, если версия изменилась
+    const seenVersion = localStorage.getItem('seenVersion');
+    if (seenVersion !== this.appVersion) {
+      // Открываем диалог после входа
+      this.$nextTick(() => {
+        this.$refs.changelogDialog?.openDialog();
+      });
     }
 
     // Проверка версии приложения

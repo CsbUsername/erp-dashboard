@@ -2,7 +2,7 @@
 import fieldsMixin from "@/mixins/fieldsMixin.js";
 import httpMixin from "@/mixins/httpMixin.js";
 import {URLS} from "@/constants/urls.js";
-import AppSSCCInfo from "@/components/AppSSCCInfo.vue";
+import AppSSCCInfo from "@/components/SSCC/AppSSCCInfo.vue";
 
 export default {
   components: {AppSSCCInfo},

@@ -6,14 +6,15 @@ export default {
   data(){
     return {
       loading: false,     // для индикации загрузки
-      error: null         // для хранения ошибок
+      httpError: null,
+      dtErrors: null// для хранения ошибок
     }
   },
 
   methods: {
     async sendRequest({ method = "get", url, data = null, params = null, headers = {}, isUserID=true }) {
       this.loading = true;
-      this.error = null;
+      this.httpError = null;
 
       try {
         // Получаем userid из localStorage
@@ -37,8 +38,8 @@ export default {
         });
         return response.data;
       } catch (error) {
-        this.error = error.response?.data || error.message;
-        console.error("HTTP Error:", this.error);
+        this.httpError = error.response?.data || error.message;
+        console.error("HTTP Error:", this.httpError);
         throw error;
       } finally {
         this.loading = false;
@@ -52,8 +53,34 @@ export default {
           url: URLS.ORDERS.FA078_FIELDS.replace('_table_id_', table_id)
         })
       } catch (error) {
-        this.$vuetify.toast.error(`Ошибка загрузки: ${this.error || 'Неизвестная ошибка'}`)
+        this.$vuetify.toast.error(`Ошибка загрузки: ${this.httpError || 'Неизвестная ошибка'}`)
       }
+    },
+
+    async send_dt_commnad(command, params = {}, handleID = '') {
+      // Создаем объект с параметрами для отправки на ваш сервер
+      const requestData = {
+        url: this.buildURL(command, params) + handleID
+      };
+
+      // Отправляем запрос на внутренний endpoint вашего сервера
+      const response = await this.sendRequest({
+        method: 'POST', // Используем POST для отправки данных
+        url: URLS.SERVICE.DT_PROXY, // Ваш внутренний endpoint для проксирования запросов
+        data: requestData, // Отправляем данные в теле запроса
+        isUserID: false
+      });
+
+      if(response && response['soa-result']?.Line){
+        return {'succes': response['soa-result'].Line, 'status': response['soa-result'].status }
+      }
+
+      if(response && response['soa-result']?.Error){
+        this.dtErrors = response['soa-result'].Error
+        return {'error': response['soa-result'].Error, 'status': response['soa-result'].status }
+      }
+
+      return {'withoutRespsonse': response['soa-result'] }
     },
 
     buildURL(command, params = {}) {
@@ -65,7 +92,7 @@ export default {
       return DT_BASE_URL.replace('{cmd}', encodeURIComponent(parsedCommand));
     },
 
-    async send_dt_commnad(command, params = {}, handleID = '') {
+    async _send_dt_commnad(command, params = {}, handleID = '') {
       const resposne = await this.sendRequest({
         method: 'GET',
         url: this.buildURL(command, params) + handleID,
@@ -77,6 +104,7 @@ export default {
       }
 
       if(resposne && resposne['soa-result']?.Error){
+        this.dtErrors = resposne['soa-result'].Error
         return {'error': resposne['soa-result'].Error, 'status': resposne['soa-result'].status }
       }
 
@@ -97,6 +125,16 @@ export default {
           description: description,
         })
       })
+    },
+
+    checkL2Status(response) {
+      // Проверяем, что ответ имеет ожидаемую структуру
+      if (!response.withoutRespsonse || !response.withoutRespsonse.status) {
+        return false;
+      }
+
+      const status = response.withoutRespsonse.status;
+      return status.includes('L2+0+0');
     }
   }
 }

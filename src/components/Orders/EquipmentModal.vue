@@ -1,5 +1,5 @@
 <script>
-import AppSSCCInfo from '@/components/AppSSCCInfo.vue'
+import AppSSCCInfo from '@/components/SSCC/AppSSCCInfo.vue'
 import {DT, DT_BASE_URL, DT_HANDLE_URL} from "@/constants/dt.js";
 import httpMixin from "@/mixins/httpMixin.js";
 import accessMixin from "@/mixins/accessMixin.js";
@@ -79,7 +79,8 @@ export default {
         const add = await this.send_dt_commnad(DT.ORDER.ADD, {
           'position_id': position_id,
           'sscc': this.eq_sscc,
-          'user_id': this.user_id
+          'user_id': this.user_id,
+          'lager': 7120
         }, handleId)
 
         await this.send_log({

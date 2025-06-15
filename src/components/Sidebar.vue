@@ -1,25 +1,38 @@
-<script>
+<script setup>
+import {ref, watch, onMounted, onUnmounted, computed} from 'vue'
 
+const props = defineProps(['links', 'drawer', 'version'])
+const d = ref(props.drawer)
+const windowWidth = ref(window.innerWidth)
 
-export default {
-  props: ['links', 'drawer', 'version'],
-  data() {
-    return {
-      d: this.drawer
-    }
-  },
-  computed: {
-    username() {
-      const token_data = JSON.parse(localStorage.getItem('token'))
-      return token_data.username || 'Guest'
-    }
-  },
+const username = computed(() => {
+  const token_data = JSON.parse(localStorage.getItem('token'))
+  return token_data.username || 'Guest'
+})
 
-  updated() {
-    this.d = this.drawer
+const checkWindowSize = () => {
+  windowWidth.value = window.innerWidth
+  if (windowWidth.value < 800) {
+    d.value = false
   }
 }
+
+watch(() => props.drawer, (newVal) => {
+  if (windowWidth.value >= 800) {
+    d.value = newVal
+  }
+})
+
+onMounted(() => {
+  window.addEventListener('resize', checkWindowSize)
+  checkWindowSize() // Проверяем при монтировании
+})
+
+onUnmounted(() => {
+  window.removeEventListener('resize', checkWindowSize)
+})
 </script>
+
 <template>
   <v-navigation-drawer v-model="d" color="#425C5A" class="rounded-e-xl">
     <v-sheet color="#3D5654" class="pa-4 rounded-te-xl text-center">
